@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Reto del día</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    background: radial-gradient(circle at 30% 20%, #241e40 0%, #0a0714 60%, #050308 100%);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: #f5f0ff;
+    overflow-x: hidden;
+  }
+  .estrellas {
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(2px 2px at 20px 30px, #ffffff88, transparent),
+      radial-gradient(2px 2px at 120px 80px, #ffffff66, transparent),
+      radial-gradient(1px 1px at 200px 40px, #ffffffaa, transparent),
+      radial-gradient(1px 1px at 60px 150px, #ffffff55, transparent),
+      radial-gradient(2px 2px at 260px 180px, #ffffff77, transparent),
+      radial-gradient(1px 1px at 320px 60px, #ffffff99, transparent),
+      radial-gradient(1px 1px at 160px 220px, #ffffff44, transparent);
+    background-repeat: repeat;
+    background-size: 340px 260px;
+    z-index: 0;
+  }
+  .contenedor {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
+    text-align: center;
+  }
+  .agujero {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #6b4fd6 0%, #2a1a5e 40%, #050308 75%);
+    box-shadow: 0 0 40px 10px #6b4fd655, 0 0 80px 25px #2a1a5e55;
+    margin-bottom: 28px;
+  }
+  .etiqueta {
+    font-family: ui-monospace, Menlo, monospace;
+    letter-spacing: 3px;
+    font-size: 14px;
+    color: #b39dff;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  .fecha {
+    font-size: 14px;
+    color: #8a7ec2;
+    margin-bottom: 32px;
+  }
+  #texto {
+    font-size: clamp(24px, 6vw, 40px);
+    line-height: 1.35;
+    font-weight: 600;
+    max-width: 640px;
+  }
+  .pie {
+    position: fixed;
+    bottom: 18px;
+    font-size: 12px;
+    color: #6a5f96;
+    z-index: 1;
+  }
+</style>
+</head>
+<body>
+  <div class="estrellas"></div>
+  <div class="contenedor">
+    <div class="agujero"></div>
+    <div class="etiqueta">Reto del día</div>
+    <div class="fecha" id="fecha"></div>
+    <div id="texto">Cargando…</div>
+  </div>
+  <div class="pie">Clase de Luken</div>
+
+  <script>
+    fetch('reto.json?_=' + Date.now())
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('texto').textContent = data.texto;
+        const f = new Date(data.fecha + 'T00:00:00');
+        document.getElementById('fecha').textContent = f.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+      })
+      .catch(() => {
+        document.getElementById('texto').textContent = 'Hoy: sé amable con alguien sin que te lo pidan.';
+      });
+  </script>
+</body>
+</html>

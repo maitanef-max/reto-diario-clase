@@ -1,0 +1,46 @@
+# Genera el reto del dia y lo publica en GitHub Pages, gratis.
+#
+# Para activarlo:
+# 1. Sube este proyecto a un repositorio de GitHub (puede ser publico,
+#    aqui no hay ningun dato personal).
+# 2. Settings -> Secrets and variables -> Actions -> New secret:
+#      ANTHROPIC_API_KEY
+# 3. Settings -> Pages -> Source: "Deploy from a branch" -> Branch: main / (root).
+# 4. Corre todos los dias a las 05:30 UTC (un poco antes de que empiecen
+#    las clases). Tambien se puede lanzar a mano desde "Actions".
+
+name: Reto diario
+
+on:
+  schedule:
+    - cron: "30 5 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  generar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Generar el reto de hoy
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python generar_reto.py
+
+      - name: Publicar el cambio
+        run: |
+          git config user.name "reto-diario-bot"
+          git config user.email "actions@github.com"
+          git add reto.json
+          git diff --quiet --cached || git commit -m "Reto del dia $(date +%F)"
+          git push
